@@ -153,3 +153,9 @@ Ten projekt powstał **wyłącznie w celach edukacyjnych**. Memecoiny są aktywa
 ## 📄 Licencja
 
 Licencja MIT — możesz swobodnie używać i modyfikować projekt na własne potrzeby.
+
+---
+
+## 🤖 Narzędzia i wsparcie
+
+Projekt został zbudowany przy pomocy [Claude](https://claude.ai) — asystenta AI, który wspierał proces planowania architektury, pisania kodu oraz rozwiązywania problemów technicznych napotkanych podczas rozwoju projektu.
