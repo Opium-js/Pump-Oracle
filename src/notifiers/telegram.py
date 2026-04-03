@@ -49,6 +49,9 @@ def format_pair_message(pair: dict) -> str:
         f"🔄 Buy/Sell 1h: {ratio_str}\n"
         f"⏱️ Wiek pary:   {age_str}\n"
         f"\n"
+        f"🛡️ Ryzyko:      {pair.get('risk_level', 'N/A')} "
+        f"(score: {pair.get('risk_score', 'N/A')})\n"
+        f"\n"
         f"🔗 {pair['url']}"
     )
 

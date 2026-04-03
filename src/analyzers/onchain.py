@@ -114,13 +114,31 @@ def analyze_pairs(raw_pairs: list[dict]) -> pd.DataFrame:
 
 
 def get_interesting_pairs(raw_pairs: list[dict]) -> list[dict]:
+    from src.analyzers.rugpull import analyze_rugpull_risk
+
     df = analyze_pairs(raw_pairs)
 
     if df.empty:
         return []
 
-    interesting_df = df[df["interesting"]].sort_values(
-        "volume_24h", ascending=False
-    )
+    interesting_df = df[df["interesting"]].copy()
+    results = []
 
-    return interesting_df.to_dict(orient="records")
+    for _, row in interesting_df.iterrows():
+        pair = row.to_dict()
+        rugpull = analyze_rugpull_risk(pair)
+        pair["risk_score"] = rugpull["risk_score"]
+        pair["risk_level"] = rugpull["risk_level"]
+        pair["risk_warnings"] = rugpull["warnings"]
+
+        if rugpull["is_safe"]:
+            results.append(pair)
+        else:
+            logger.info(
+                f"⚠️  Odfiltrowano {pair['name']} — "
+                f"ryzyko {rugpull['risk_level']} "
+                f"(score: {rugpull['risk_score']})"
+            )
+
+    results.sort(key=lambda x: x["volume_24h"], reverse=True)
+    return results
