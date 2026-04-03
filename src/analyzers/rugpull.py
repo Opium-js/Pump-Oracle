@@ -11,9 +11,6 @@ MAX_VOLUME_LIQ_RATIO  = 50.0   # wolumen/płynność > 50 = podejrzane
 
 
 def check_sell_pressure(pair: dict) -> tuple[bool, str]:
-    """
-    Sprawdza czy jest za duża presja sprzedaży.
-    """
     buys  = pair.get("buys_1h", 0)
     sells = pair.get("sells_1h", 0)
 
@@ -28,9 +25,6 @@ def check_sell_pressure(pair: dict) -> tuple[bool, str]:
 
 
 def check_low_activity(pair: dict) -> tuple[bool, str]:
-    """
-    Sprawdza czy token ma podejrzanie mało transakcji.
-    """
     buys  = pair.get("buys_1h", 0)
     sells = pair.get("sells_1h", 0)
     total = buys + sells
@@ -42,9 +36,6 @@ def check_low_activity(pair: dict) -> tuple[bool, str]:
 
 
 def check_pump_and_dump(pair: dict) -> tuple[bool, str]:
-    """
-    Sprawdza czy wzrost ceny jest podejrzanie wysoki (pump & dump).
-    """
     change_1h = pair.get("change_1h", 0)
 
     if change_1h > MAX_PRICE_CHANGE_1H:
@@ -54,9 +45,6 @@ def check_pump_and_dump(pair: dict) -> tuple[bool, str]:
 
 
 def check_liquidity_trap(pair: dict) -> tuple[bool, str]:
-    """
-    Sprawdza czy płynność jest za niska — łatwy rugpull.
-    """
     liquidity = pair.get("liquidity_usd", 0)
 
     if liquidity < MIN_LIQUIDITY_LOCKED:
@@ -66,10 +54,6 @@ def check_liquidity_trap(pair: dict) -> tuple[bool, str]:
 
 
 def check_volume_liquidity_ratio(pair: dict) -> tuple[bool, str]:
-    """
-    Sprawdza stosunek wolumenu do płynności.
-    Bardzo wysoki stosunek może oznaczać manipulację wolumenem.
-    """
     liquidity  = pair.get("liquidity_usd", 0)
     volume_24h = pair.get("volume_24h", 0)
 
@@ -85,21 +69,14 @@ def check_volume_liquidity_ratio(pair: dict) -> tuple[bool, str]:
 
 
 def check_no_socials(pair: dict) -> tuple[bool, str]:
-    """
-    Sprawdza czy token ma jakiekolwiek social media.
-    Brak sociali = większe ryzyko rugpull.
-    """
     info = pair.get("info") or {}
     socials  = info.get("socials", []) or []
     websites = info.get("websites", []) or []
 
     if not socials and not websites:
-        return True, "Brak social media i strony WWW"
+        return True,
 
     return False, ""
-
-
-# ── Główna funkcja ──────────────────────────────────────────────────────────
 
 CHECKS = [
     check_sell_pressure,
@@ -112,15 +89,6 @@ CHECKS = [
 
 
 def analyze_rugpull_risk(pair: dict) -> dict:
-    """
-    Analizuje ryzyko rugpull dla danej pary.
-
-    Zwraca dict z:
-    - risk_score: 0-100 (im wyższy tym większe ryzyko)
-    - risk_level: LOW / MEDIUM / HIGH / CRITICAL
-    - warnings: lista ostrzeżeń
-    - is_safe: bool czy token jest bezpieczny
-    """
     warnings = []
 
     for check in CHECKS:
@@ -128,7 +96,6 @@ def analyze_rugpull_risk(pair: dict) -> dict:
         if is_risky:
             warnings.append(reason)
 
-    # Oblicz risk score (każde ostrzeżenie dodaje punkty)
     risk_score = min(len(warnings) * 20, 100)
 
     if risk_score == 0:
@@ -140,7 +107,7 @@ def analyze_rugpull_risk(pair: dict) -> dict:
     else:
         risk_level = "CRITICAL"
 
-    is_safe = risk_score <= 40  # akceptujemy max MEDIUM
+    is_safe = risk_score <= 40  # 
 
     if warnings:
         logger.debug(
