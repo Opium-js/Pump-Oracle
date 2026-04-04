@@ -14,7 +14,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-SCAN_INTERVAL_MINUTES = 15
+from src.config import config
+SCAN_INTERVAL_MINUTES = config["bot"]["scan_interval_minutes"]
 
 def run_scan() -> None:
     logger.info("━" * 50)

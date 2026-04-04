@@ -51,7 +51,7 @@ Wszystkie progi są konfigurowalne w `src/analyzers/onchain.py`.
 
 ## 📁 Struktura projektu
 ```
-solana-memecoin-bot/
+pump-oracle/
 ├── src/
 │   ├── analyzers/
 │   │   └── onchain.py       # Analiza i filtrowanie danych on-chain

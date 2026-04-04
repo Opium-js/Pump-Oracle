@@ -1,0 +1,18 @@
+bot:
+  scan_interval_minutes: 15
+  name: "Pump-Oracle"
+
+filters:
+  min_liquidity_usd: 5000
+  min_volume_24h: 10000
+  max_pair_age_hours: 72
+  min_price_change_1h: 5.0
+  min_buy_sell_ratio: 1.1
+
+rugpull:
+  max_sell_ratio: 3.0
+  min_transactions_1h: 10
+  max_price_change_1h: 1000.0
+  min_liquidity_locked: 1000
+  max_volume_liq_ratio: 50.0
+  max_safe_risk_score: 40

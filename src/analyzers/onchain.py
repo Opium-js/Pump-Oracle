@@ -5,13 +5,14 @@ from datetime import datetime, timezone
 logger = logging.getLogger(__name__)
 
 
-# ── Kryteria filtrowania ────────────────────────────────────────────────────
-MIN_LIQUIDITY_USD   = 5_000   # minimalna płynność
-MIN_VOLUME_24H      = 10_000   # minimalny wolumen 24h
-MAX_PAIR_AGE_HOURS  = 72       # max wiek pary w godzinach
-MIN_PRICE_CHANGE_1H = 5.0     # minimalny wzrost ceny w ciągu 1h (%)
-MIN_BUY_SELL_RATIO  = 1.1     # więcej kupujących niż sprzedających
+from src.config import config
 
+_f = config["filters"]
+MIN_LIQUIDITY_USD   = _f["min_liquidity_usd"]
+MIN_VOLUME_24H      = _f["min_volume_24h"]
+MAX_PAIR_AGE_HOURS  = _f["max_pair_age_hours"]
+MIN_PRICE_CHANGE_1H = _f["min_price_change_1h"]
+MIN_BUY_SELL_RATIO  = _f["min_buy_sell_ratio"]
 
 def parse_pair(pair: dict) -> dict | None:
     try:

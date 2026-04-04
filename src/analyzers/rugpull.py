@@ -2,12 +2,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# ── Progi rugpull detection ─────────────────────────────────────────────────
-MAX_SELL_RATIO        = 3.0    # sells/buys > 3 = podejrzane
-MIN_TRANSACTIONS_1H   = 10     # za mało transakcji = martwy token
-MAX_PRICE_CHANGE_1H   = 1000.0 # +1000% w 1h = prawdopodobny pump & dump
-MIN_LIQUIDITY_LOCKED  = 1000   # płynność poniżej $1k = łatwy rugpull
-MAX_VOLUME_LIQ_RATIO  = 50.0   # wolumen/płynność > 50 = podejrzane
+from src.config import config
+
+_r = config["rugpull"]
+MAX_SELL_RATIO        = _r["max_sell_ratio"]
+MIN_TRANSACTIONS_1H   = _r["min_transactions_1h"]
+MAX_PRICE_CHANGE_1H   = _r["max_price_change_1h"]
+MIN_LIQUIDITY_LOCKED  = _r["min_liquidity_locked"]
+MAX_VOLUME_LIQ_RATIO  = _r["max_volume_liq_ratio"]
 
 
 def check_sell_pressure(pair: dict) -> tuple[bool, str]:
@@ -92,9 +94,13 @@ def analyze_rugpull_risk(pair: dict) -> dict:
     warnings = []
 
     for check in CHECKS:
-        is_risky, reason = check(pair)
-        if is_risky:
-            warnings.append(reason)
+        try:
+            is_risky, reason = check(pair)
+            if is_risky:
+                warnings.append(reason)
+        except Exception as e:
+            logger.debug(f"Błąd sprawdzenia: {e}")
+            continue
 
     risk_score = min(len(warnings) * 20, 100)
 
@@ -107,7 +113,7 @@ def analyze_rugpull_risk(pair: dict) -> dict:
     else:
         risk_level = "CRITICAL"
 
-    is_safe = risk_score <= 40  # 
+    is_safe = risk_score <= _r["max_safe_risk_score"]
 
     if warnings:
         logger.debug(
