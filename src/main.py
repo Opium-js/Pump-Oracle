@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from src.data.fetcher import get_new_solana_pairs
 from src.analyzers.onchain import analyze_pairs, get_interesting_pairs
 
+from src.database import init_db, save_scan, save_tokens
+
 load_dotenv()
 
 logging.basicConfig(
@@ -31,6 +33,10 @@ def run_scan() -> None:
 
     logger.info(f"Skan zakończony: {len(interesting)}/{len(df)} ciekawych par")
 
+    scan_id = save_scan(total_pairs=len(df), found_pairs=len(interesting))
+    if interesting:
+        save_tokens(scan_id, interesting)
+
     for pair in interesting:
         age_str = f"{pair['age_hours']:.1f}h" if pair['age_hours'] else "?"
         logger.info(
@@ -53,6 +59,7 @@ def run_scan() -> None:
 
 def main() -> None:
     logger.info("Pump-Oracle uruchomiony!")
+    init_db()
     logger.info(f" Skan co {SCAN_INTERVAL_MINUTES} minut")
 
     while True:
