@@ -132,6 +132,9 @@ def get_interesting_pairs(raw_pairs: list[dict]) -> list[dict]:
         pair["risk_level"] = rugpull["risk_level"]
         pair["risk_warnings"] = rugpull["warnings"]
 
+        from src.analyzers.categorizer import categorize_token
+        pair["tags"] = categorize_token(pair)
+
         if rugpull["is_safe"]:
             results.append(pair)
         else:

@@ -42,6 +42,7 @@ def init_db() -> None:
                 risk_level   TEXT,
                 risk_score   INTEGER,
                 url          TEXT,
+                tags         TEXT,
                 FOREIGN KEY (scan_id) REFERENCES scans(id)
             );
         """)
@@ -66,8 +67,8 @@ def save_tokens(scan_id: int, tokens: list[dict]) -> None:
                 scan_id, found_at, name, pair_address, dex,
                 price_usd, liquidity, volume_24h, volume_1h,
                 change_1h, change_24h, age_hours,
-                risk_level, risk_score, url
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                risk_level, risk_score, url, tags
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             [(
                 scan_id,
                 now,
@@ -84,6 +85,7 @@ def save_tokens(scan_id: int, tokens: list[dict]) -> None:
                 t.get("risk_level", "N/A"),
                 t.get("risk_score", 0),
                 t.get("url", ""),
+                ",".join(t.get("tags", [])),
             ) for t in tokens]
         )
     logger.info(f"Zapisano {len(tokens)} tokenów do bazy (scan_id: {scan_id})")

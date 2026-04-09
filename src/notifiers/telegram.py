@@ -1,5 +1,6 @@
 import logging
 import requests
+from src.analyzers.categorizer import format_tags
 from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ def format_pair_message(pair: dict) -> str:
 
     return (
         f"🚀 {pair['name']} — {pair['dex'].upper()}\n"
+        f"{format_tags(pair.get('tags', []))}\n"
         f"\n"
         f"💧 Płynność:    ${pair['liquidity_usd']:,.0f}\n"
         f"📊 Wolumen 24h: ${pair['volume_24h']:,.0f}\n"
