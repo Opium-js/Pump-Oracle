@@ -17,6 +17,7 @@ Pump-Oracle co 15 minut skanuje zdecentralizowane giełdy na blockchainie Solana
 - Analizę danych on-chain z użyciem pandas
 - Automatyczne systemy powiadomień
 - Czystą architekturę i profesjonalny workflow z Git
+- Backtesting skuteczności filtrów na podstawie historycznych danych
 
 ---
 
@@ -51,20 +52,34 @@ Wszystkie progi są konfigurowalne w `src/analyzers/onchain.py`.
 
 ## 📁 Struktura projektu
 ```
-pump-oracle/
+Pump-Oracle/
+├── .github/
+│   └── workflows/
+│       └── tests.yml            # GitHub Actions CI/CD
+├── data/
+│   └── pump_oracle.db           # Baza danych SQLite (ignorowana przez git)
 ├── src/
 │   ├── analyzers/
-│   │   └── onchain.py       # Analiza i filtrowanie danych on-chain
-│   ├── notifiers/
-│   │   └── telegram.py      # Formatowanie i wysyłanie powiadomień Telegram
+│   │   ├── categorizer.py       # Kategoryzacja tokenów tagami
+│   │   ├── onchain.py           # Analiza i filtrowanie danych on-chain
+│   │   └── rugpull.py           # Wykrywanie ryzyka rugpull
 │   ├── data/
-│   │   └── fetcher.py       # Integracja z DexScreener API
-│   └── main.py              # Główna pętla bota
+│   │   └── fetcher.py           # Integracja z DexScreener API
+│   ├── notifiers/
+│   │   └── telegram.py          # Formatowanie i wysyłanie powiadomień
+│   ├── backtesting.py           # Raport skuteczności bota
+│   ├── config.py                # Wczytywanie konfiguracji z YAML
+│   ├── database.py              # Operacje na bazie danych SQLite
+│   ├── main.py                  # Główna pętla bota
+│   └── tracker.py               # Śledzenie cen tokenów po wykryciu
 ├── tests/
-│   └── test_analyzer.py     # Testy jednostkowe modułu analizatora
-├── conftest.py              # Konfiguracja pytest
-├── requirements.txt         # Zależności projektu
-└── .env.example             # Szablon zmiennych środowiskowych
+│   └── test_analyzer.py         # Testy jednostkowe modułu analizatora
+├── .env.example                 # Szablon zmiennych środowiskowych
+├── .gitignore
+├── config.yml                   # Plik konfiguracyjny bota
+├── conftest.py                  # Konfiguracja pytest
+├── requirements.txt             # Zależności projektu
+└── README.md
 ```
 
 ---
@@ -127,6 +142,12 @@ python -m src.main
 ### Uruchomienie testów
 ```bash
 pytest tests/ -v
+```
+
+### Uruchomienie raportu backtestingu
+
+```bash
+python -m src.backtesting
 ```
 
 ---
