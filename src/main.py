@@ -8,6 +8,9 @@ from src.analyzers.onchain import analyze_pairs, get_interesting_pairs
 
 from src.database import init_db, save_scan, save_tokens
 
+from src.tracker import check_tracked_tokens
+from src.database import init_db, save_scan, save_tokens, save_token_for_tracking
+
 load_dotenv()
 
 logging.basicConfig(
@@ -35,7 +38,9 @@ def run_scan() -> None:
 
     scan_id = save_scan(total_pairs=len(df), found_pairs=len(interesting))
     if interesting:
-        save_tokens(scan_id, interesting)
+        token_ids = save_tokens(scan_id, interesting)
+        for token_id, token in zip(token_ids, interesting):
+            save_token_for_tracking(token_id, token)
 
     for pair in interesting:
         age_str = f"{pair['age_hours']:.1f}h" if pair['age_hours'] else "?"
@@ -65,6 +70,7 @@ def main() -> None:
     while True:
         try:
             run_scan()
+            check_tracked_tokens()
         except Exception as e:
             logger.error(f"Nieoczekiwany błąd: {e}", exc_info=True)
 
